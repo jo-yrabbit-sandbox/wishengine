@@ -1,0 +1,23 @@
+services:
+  bot:
+    build: .
+    env_file: .env
+    ports:
+      - "8080:8080"  # Expose health check endpoint
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      - mock-api
+
+  # Mock API for testing
+  mock-api:
+    image: stoplight/prism:4
+    command: mock -h 0.0.0.0 /api-server/openapi.yml
+    volumes:
+      - ./mock-api-server:/api-server
+    ports:
+      - "5000:4010"
