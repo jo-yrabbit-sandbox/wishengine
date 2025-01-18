@@ -9,7 +9,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from api_client import MessageAPIClient
 
 # Configure logging
-MY_BOT_NAME='test-bot'  # Update me first!
+MY_BOT_NAME='wishengine'
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
