@@ -23,10 +23,13 @@ Follow the onboarding instructions below to obtain access.
     * `MY_GITHUB_ORG_NAME`
     * `MY_BOT_NAME`
 
-4. Clone this template repo into a blank directory `MY_BOT_NAME`
+4. Create your new repo using this template repo. We'll assume you want to call it `MY_BOT_NAME`
 ```sh
-cd ~/proj  # Go to your project directory
-git clone https://github.com/tee-gee-bots/test-bot.git MY_BOT_NAME
+# 1. Go to Github and create your own repo `MY_GITHUB_ORG_NAME/MY_BOT_NAME` based on this template `tee-gee-bots/test-bot`
+# 2. Go to your project directory
+cd ~/proj
+# 3. Clone your new repo
+git clone https://github.com/MY_GITHUB_ORG_NAME/MY_BOT_NAME.git MY_BOT_NAME
 cd MY_BOT_NAME
 ```
 
@@ -72,7 +75,7 @@ Logs are available in AWS CloudWatch under `/ecs/[environment]/[MY_BOT_NAME]/*`.
 ```
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml    # Deployment workflow
+│       └── deploy.yml   # Deployment workflow
 ├── src/
 │   ├── __init__.py
 │   └── bot.py           # Main bot code

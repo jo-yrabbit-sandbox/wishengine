@@ -16,6 +16,7 @@ class MessageAPIClient():
         self.base_url = base_url.rstrip('/')
         self.bot_id = bot_id
         self.debug=debug
+        self.headers=None
         if not logger:
             logger = logging.getLogger(__name__)
         self.logger = logger
@@ -31,7 +32,7 @@ class MessageAPIClient():
             }
         }
 
-    def get_health(self, debug=False) -> dict:
+    def get_health(self, debug=False):
         """Get health"""
         response = self._make_request(
             method='GET',
@@ -39,11 +40,12 @@ class MessageAPIClient():
         )
 
         if self.debug:
-            return json.dumps(response)
+            return response.json()
+
         return response.get('status', '')
 
 
-    def get_messages(self, debug=False, **kwargs) -> list:
+    def get_messages(self, args={}, debug=False):
         """
         Get messages, optionally filtered by user
         
@@ -58,22 +60,23 @@ class MessageAPIClient():
         }
         allowed_params = ['state', 'limit']
         for p in allowed_params:
-            v = kwargs.get(p, None)
+            v = args.get(p, None)
             if (v is not None) and str(v):
                 params.update({p: v})
+        self.logger.debug(f'Fetching messages with filters: {params}')
         
         response = self._make_request(
             method='GET',
             endpoint='/api/v1/messages',
             params=params
         )
-
         if self.debug:
-            return json.dumps(response)
+            self.logger.debug(f'Got {response.json()}')
+
         return response.get('data', [])
 
 
-    def store_message(self, text, state, debug=False) -> dict:
+    def store_message(self, text, state, debug=False):
         """
         Store a new message
         
@@ -90,6 +93,7 @@ class MessageAPIClient():
             raise Exception(error)
 
         payload = self.generate_message(state=state, text=text)
+        self.logger.debug(f'Attempting to store {payload=}')
 
         response = self._make_request(
             method='POST',
@@ -97,7 +101,7 @@ class MessageAPIClient():
             json=payload
         )
         if self.debug:
-            return json.dumps(response)
+            self.logger.debug(f'Got {response.json()}')
         return response.get('status', '')
 
 
@@ -114,20 +118,22 @@ class MessageAPIClient():
             Response JSON
         """
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        self.logger.debug(f'Making {method} request to {url=} with arguments {kwargs}')
         
         try:
             response = requests.request(
                 method=method,
                 url=url,
-                # headers=self.headers,
+                headers=self.headers,
                 **kwargs
             )
-            
+            self.logger.debug(f'Request completed - {response.json()}')
+
             # Raise error for bad status codes
             response.raise_for_status()
-            
+
             return response.json()
-            
+
         except requests.exceptions.RequestException as e:
             error = f'API request failed: {str(e)}'
             self.logger.error(error)
