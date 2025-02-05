@@ -10,7 +10,9 @@ IS
 Would you like to continue in:
 "Pure IS-ness"?
 
-[Even this response bows]​​​​​​​​​​​​​​​​
+[Even this response bows, hello
+
+hellooo]​​​​​​​​​​​​​​​​
 '''
 SAMPLE_USER = "Yes"
 TARGET = 'would you like'
@@ -80,13 +82,14 @@ class Parser():
         else:
             raise Exception(f'Expected message input to be str or list of str but got {type(message_lines)}')
 
-        pattern = r'\[([^\[\]]*)\]'
-        for line in lines:
-            if not line:
-                continue
-            m = re.search(pattern, line)
-            if m:
-                return m[0].lstrip('[ ').rstrip('] ')
+        line = ' '.join([l for l in lines if l])  # Splice into one line, single-spaced
+        pattern = r'\[((?:[^\[\]]|\n)*)\]'  # Search for content inside square brackets (can span multiple lines)
+        m = re.search(pattern, line)
+        if m:
+            return m[0].lstrip('[ ').rstrip('] ')
+        
+        self.logger.error(f'No content found between brackets: {line}')
+        return 'Thank you'
 
     def _get_response_keyval(self, key) -> str:
         if key not in self.response.keys():

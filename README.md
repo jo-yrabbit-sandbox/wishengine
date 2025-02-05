@@ -198,6 +198,19 @@ docker-compose logs mock-api
 ```
 6. Confirm you can interact with your bot on Telegram
 
+### Post deployment testing
+
+Once deployed, Telegram will only allow a single instance of your bot to be running at any given time (using your Token ID).
+To temporarily pause the cloud task so that you can run/test an instance locally:
+```
+aws ecs update-service --cluster sandbox-telegram-bot-cluster --service sandbox-my-test-bot --desired-count 0
+```
+
+Commit your changes in order to spin a new instance. Or, resume paused instance without making a new commit:
+```
+aws ecs update-service --cluster sandbox-telegram-bot-cluster --service sandbox-my-test-bot --desired-count 1
+```
+
 ## Reference
 
 Here are some tutorials to help get you started. The easiest example was the "echo-bot" which will parrot back whatever you say to it.
