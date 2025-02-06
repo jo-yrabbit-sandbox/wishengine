@@ -200,6 +200,9 @@ docker-compose logs mock-api
 
 ### Post deployment testing
 
+TODO: Convert this to Github Actions pause-bot.yml and resume-bot.yml
+
+For now, server admin only:
 Once deployed, Telegram will only allow a single instance of your bot to be running at any given time (using your Token ID).
 To temporarily pause the cloud task so that you can run/test an instance locally:
 ```

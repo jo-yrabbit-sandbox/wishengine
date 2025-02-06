@@ -96,7 +96,7 @@ async def fetch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def answer_if_user_responds_to_claude(update:Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Detect if is reply to text chat"""
-    message = update.message
+    message = update.message or update.channel_post
     if not message:
         logger.debug('Ignoring latest message due to no content')
         return
@@ -110,7 +110,7 @@ async def answer_if_user_responds_to_claude(update:Update, context: ContextTypes
     logger.debug(f'Latest message was a reply to prompt \'{prompt}\'')
 
     # Process it
-    p = Parser(debug=DEBUG, logger=logger)
+    p = Parser(logger=logger)  # Set debug=DEBUG if you want to test using hardcoded sample prompts defined in Parser class
     p.process(prompt, message.text)
 
     # Respond
@@ -119,7 +119,7 @@ async def answer_if_user_responds_to_claude(update:Update, context: ContextTypes
         logger.debug(f'Doing nothing. Response was not generated for user input \'{message.text}\'')
 
     # Finally, respond to user:
-    await update.message.reply_text(response)
+    await context.bot.send_message(chat_id=message.chat.id, text=response)
 
     # Store response
     state = str(p.get_state())
@@ -143,7 +143,8 @@ Available commands:
 /ping - Check if bot is connected to server
 /fetch - Show last messages in server
     """
-    await update.message.reply_text(help_text)
+    message = update.message or update.channel_post
+    await context.bot.send_message(chat_id=message.chat.id, text=help_text)
 
 
 def main():
